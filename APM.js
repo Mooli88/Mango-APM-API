@@ -9,18 +9,19 @@ async function auth(
   email = process.env.APM_EMAIL,
   password = process.env.APM_PASS
 ) {
-  const options = {
-    path: "/authenticate",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-  const data = {
-    email,
-    password
-  };
   if (!cache.accessToken) {
+    const options = {
+      path: "/authenticate",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+    const data = {
+      email,
+      password
+    };
+
     const res = await asyncRequest({ data, options });
     cache.accessToken = res ? res.accessToken : null;
   }
@@ -29,26 +30,25 @@ async function auth(
 }
 
 async function getUser() {
-  const options = {
-    path: "/user",
-    token: cache.accessToken
-  };
-
   if (!cache.user.id) {
-    const user = await asyncRequest({ options });
-    cache.user = user;
+    const options = {
+      path: "/user",
+      token: cache.accessToken
+    };
+  
+    cache.user = await asyncRequest({ options });
   }
 
   return cache.user;
 }
 
 async function getUserMeta(id) {
-  const options = {
-    path: `/user/${id || cache.user.id}/metadata`,
-    token: cache.accessToken
-  };
-
   if (!cache.userMeta) {
+    const options = {
+      path: `/user/${id || cache.user.id}/metadata`,
+      token: cache.accessToken
+    };
+
     const userMeta = await asyncRequest({ options });
     cache.userMeta = userMeta;
   }
